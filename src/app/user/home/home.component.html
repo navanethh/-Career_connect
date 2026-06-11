@@ -1,0 +1,162 @@
+<mat-toolbar color="primary" class="mat-elevation-z6 fixed justify-between z-10">
+  <span>CareerConnect</span>
+  <button  class="flex gap-1" mat-button [matMenuTriggerFor]="menu">
+    <mat-icon>person</mat-icon>
+    {{name}}
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="openEditProfileDialog()">
+      <mat-icon >account_circle</mat-icon>
+      <span>Edit profile</span>
+    </button>
+    <button mat-menu-item (click)="onOpenUpdateJobPreferenceDialog()">
+      <mat-icon>notifications</mat-icon>
+      <span>Edit job preferences</span>
+    </button>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-menu>
+  
+</mat-toolbar>
+
+<div class="header mat-typography">
+  <span class="text-center font-fam  heading mb-7 text-white leading-9 tracking-tight">CareerConnect</span>
+  <span class="font-fam text-white">Where you connect with your career!</span>
+
+
+</div>
+
+
+
+
+<div class="jobs px-40 
+mt-10
+ flex flex-col gap-4">
+
+
+  <mat-form-field appearance="outline" class="example-full-width">
+    <mat-label>Explore jobs</mat-label>
+    <input type="text"
+           placeholder="Search jobs, locations, category, companies or departments"
+           matInput
+           #searchInput
+           [formControl]="searchControl"
+           [matAutocomplete]="auto">
+
+           @if (searchInput.value !== '') {
+            <mat-icon class="hover:cursor-pointer" matSuffix (click)="(clearFilter())">close</mat-icon>
+            }
+    <mat-autocomplete  #auto="matAutocomplete" (optionSelected)="onSelection($event)">
+      @for (option of options; track option) {
+        <mat-option [value]="option">{{option}}</mat-option>
+      }
+      @if(options.length == 0) {
+        <mat-option [value]="null" class="italic text-gray-500">No results found!</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+
+
+  @for (job of jobNotifications; track job) {
+  <mat-card class="example-card">
+    <mat-card-header>
+      <mat-card-title>{{job.jobTitle}}</mat-card-title>
+      <mat-card-subtitle>{{job.CompanyOrDept}} | {{job.location}} </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+
+      <br>
+      <h3>About this job</h3>
+      <div [innerHTML]="job.description | formatedDescription" class="example-element-description"></div>
+       
+
+      <div class="flex flex-col gap-1">
+        <div class="flex items-center justify-start gap-2">
+          <mat-icon class="material-symbols-outlined">work_history_outlined</mat-icon> 
+          <span class="italic">Job type:</span>
+          <span>
+            @switch(job.jobType) {
+            @case('remoteJob') {
+            Remote Work
+            }
+
+            @case('OnSiteJob') {
+            On-site Job
+            }
+
+            @case('HybridJob') {
+            Hybrid Job
+            }
+
+            }
+          </span>
+        </div>
+
+        <div class=" flex justify-start items-center gap-2">
+          <mat-icon class="material-symbols-outlined">account_balance_outlined</mat-icon> 
+          <span class="italic">Government or not:</span>
+          <span>
+            @if (job.govtOrNot === 'govt') {
+            Government
+            } @else {
+            Non-Government
+            }
+          </span>
+        </div>
+
+
+        <div class="flex justify-start items-center gap-2">
+
+          <mat-icon class="material-symbols-outlined">school_outlined</mat-icon> 
+          <span class="italic">minimum qualification required:</span>
+          {{job.minQualification}}
+          
+
+
+        </div>
+
+        <div class="flex justify-start items-center gap-2">
+          @if(job.minQualification === 'Graduation' || job.minQualification === 'Post Graduation') {
+          <mat-icon class="material-symbols-outlined">school_outlined</mat-icon>
+          <span class="italic">Educations considered: </span>
+           @for (education of job.educations; track education) {
+          {{education | deslugify}},
+          }
+          }        
+        </div>
+
+        <div class="flex items-center justify-start gap-2">
+          <mat-icon class="material-symbols-outlined" >manufacturing</mat-icon>
+          <span class="italic">skills required: </span>
+           @for (skill of job.skills; track skill) {
+          {{skill | deslugify}},
+          }
+        </div>
+
+            
+      <div class="flex justify-start items-center gap-2">
+
+        <mat-icon class="material-symbols-outlined">timer</mat-icon> {{job.deadline | date}}<br>
+      </div>
+
+      </div>
+
+      <small><span class="text-gray-400 font-light">{{job.createdAt | RelativeTime}}</span> . Over 100 interactions</small>
+
+    </mat-card-content>
+    <mat-card-actions class="flex gap-3" align='start'>
+      <a href="https://{{job.applicationLink}}" target="_blank" mat-raised-button color="primary">Apply</a>
+      @if (job.officialLink) {
+      <a href="https://{{job.officialLink}}" target="_blank" mat-raised-button color="primary">Official Notification</a>
+      }
+      @if (job.websiteLink) {
+      <a href="https://{{job.websiteLink}}" target="_blank" mat-raised-button color="primary">Official Website</a>
+      }
+    </mat-card-actions>
+  </mat-card>
+
+  }
+
+</div>

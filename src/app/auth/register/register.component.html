@@ -1,0 +1,260 @@
+<div class="flex min-h-full flex-col   py-12 px-32">
+
+  <mat-stepper linear #stepper>
+    <mat-step [stepControl]="basicDetailsFormGroup" [editable]="false">
+      <ng-template matStepLabel>Fill out basic details</ng-template>
+
+      <form [formGroup]="basicDetailsFormGroup"  (ngSubmit)="onBasicDetailsFormSubmit()">
+        <mat-card class="card">
+
+          <!-- <mat-card-header >Register yourself</mat-card-header> -->
+
+          <mat-card-content>
+
+
+            <div class="row">
+              <div class="col flex justify-center">
+                <mat-form-field class="full-width">
+                  <input matInput placeholder="Name" name="name" formControlName="name">
+                  @if(basicDetailsFormGroup.controls['name'].hasError('required')){
+                  <mat-error>Name is required</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+
+
+
+            <div class="row">
+              <div class="col flex justify-center">
+                <mat-form-field class="full-width">
+                  <input matInput placeholder="Email" name="email" [email]="true" formControlName="email">
+                  @if(basicDetailsFormGroup.controls['email'].hasError('required')){
+                  <mat-error>Email is required</mat-error>
+                  } @else if (basicDetailsFormGroup.controls['email'].hasError('email')){
+                  <mat-error>Invalid email</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+
+
+            <div class="row">
+              <div class="col flex justify-center">
+                <mat-form-field class="full-width">
+                  <input matInput #numberInput maxlength="10" type="number" placeholder="Number"
+                    formControlName="phoneNumber">
+                  @if(basicDetailsFormGroup.controls['phoneNumber'].hasError('required')){
+                  <mat-error>Phone number is required</mat-error>
+                  } @else if (basicDetailsFormGroup.controls['phoneNumber'].hasError('pattern') ){
+                  <mat-error>Invalid phone number</mat-error>
+                  }
+                  <mat-hint>{{numberInput.value.length }}\10</mat-hint>
+                </mat-form-field>
+              </div>
+            </div>
+
+
+            <div class="row">
+              <div class="col flex justify-center">
+                <mat-form-field class="full-width">
+                  <mat-label>Choose a date</mat-label>
+                  <input matInput [matDatepicker]="picker" formControlName="dob">
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                  @if (basicDetailsFormGroup.controls['dob'].hasError('required')) {
+                    <mat-error>Select a deadline</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col flex justify-center">
+                <mat-form-field class="full-width">
+                  <input matInput #password placeholder="Password" name="password" type="password"
+                    formControlName="password">
+                  @if(basicDetailsFormGroup.controls['password'].hasError('required')){
+                  <mat-error>Password is required</mat-error>
+                  } @else if (basicDetailsFormGroup.controls['password'].hasError('minlength')) {
+                  <mat-error>Password should be atleast 6 letters long</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col flex justify-center">
+                <mat-form-field class="full-width">
+                  <input matInput #confirmPassword placeholder="Confirm password" type="password" name="confirmPassword"
+                    formControlName="confirmPassword">
+                  @if(basicDetailsFormGroup.controls['confirmPassword'].hasError('required')){
+                  <mat-error>Confirm your password</mat-error>
+                  }
+                  @else if(password.value !== confirmPassword.value){
+                  <mat-error>Passwords are not same</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <button mat-raised-button color="primary" type="submit">Submit</button>
+          </mat-card-actions>
+        </mat-card>
+      </form>
+
+    </mat-step>
+    <mat-step label="List out  your job preferences" [editable]="false">
+      <form [formGroup]="jobPreferenceFormGroup" (ngSubmit)="onJobPreferenceFormSubmit()">
+        <mat-card class="card">
+
+          <mat-card-content >
+
+
+            <div class="row">
+              <div class="col justify-center flex">
+                <mat-form-field class="full-width">
+                  <mat-label>Highest Education</mat-label>
+                  <mat-select #highestEducation name="highestEducation" formControlName="highestEducation" required>
+                    <mat-option>--</mat-option>
+                    @for (qualification of qualifications; track qualification) {
+                    <mat-option [value]="qualification">{{qualification}}</mat-option>
+                    }
+                  </mat-select>
+                  @if (jobPreferenceFormGroup.controls['highestEducation'].hasError('required')) {
+                  <mat-error>Please choose an option</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+            </div>
+
+           @if (highestEducation.value === 'Graduation' || highestEducation.value  === 'Post Graduation') {
+            
+          
+            <div class="row">
+              <div class="col flex justify-center">              
+              <mat-form-field class="full-width">
+                <mat-label>Select your Course</mat-label>
+                <input #educationsInput
+                       type="text"
+                       placeholder="Select your course"
+                       matInput
+                       formControlName="course"
+                       [matAutocomplete]="autoEdu">
+                <mat-autocomplete requireSelection [displayWith]="displayFn" #autoEdu="matAutocomplete">
+                  @for (education of filteredEducations; track education) {
+                    <mat-option [value]="education.education">{{education.education | deslugify}}</mat-option>
+                  }
+                </mat-autocomplete>
+
+                @if(jobPreferenceFormGroup.controls['course'].hasError('required')) {
+                  <mat-error>Please select your course</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            </div>
+          }
+
+  
+ 
+
+
+
+            <div class="row">
+              <div class="col flex justify-center">
+              <mat-form-field class="full-width">
+                <mat-label>Skills you possess</mat-label>
+                <mat-chip-grid #chipGrid aria-label="skill selection">
+                  @for(skill of skillsSelected; track skill) {
+                    <mat-chip-row (removed)="removedSkill(skill)">
+                      {{skill | deslugify}}
+                      <button matChipRemove [attr.aria-label]="'remove ' + skill" >
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                    </mat-chip-row>
+                  }
+                </mat-chip-grid>
+                <input #skillsInput placeholder="Search for skills here" 
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matAutocomplete]="auto" #fruitInput
+                 [matChipInputFor]="chipGrid"
+                 (matChipInputTokenEnd)="addSkillFromInput($event)"
+                  />
+                <mat-autocomplete (optionSelected)="selectedSkill($event)"  #auto="matAutocomplete">
+                    @for (skill of filteredSkills; track skill) {
+                      <mat-option [value]="skill.skill">{{skill.skill | deslugify}}</mat-option>
+                    }
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+          </div>
+
+          
+          <div class="row">
+            <div class="col flex justify-center">
+            <mat-form-field class="full-width">
+              <mat-label>Categories you prefer</mat-label>
+              <mat-chip-grid #chipGridA aria-label="Category selection">
+                @for(category of categoriesSelected; track category) {
+                  <mat-chip-row (removed)="removedCategory(category)">
+                    {{category | deslugify}}
+                    <button matChipRemove [attr.aria-label]="'remove ' + category">
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  </mat-chip-row>
+                }
+
+              </mat-chip-grid>
+              <input placeholder="Search for categories here" #categoryInput
+               [matAutocomplete]="autoCategory" [matChipInputFor]="chipGridA"
+                />
+              <mat-autocomplete requireSelection #autoCategory="matAutocomplete" (optionSelected)="selectedCategory($event)">
+                  @for (category of filteredCategories; track category) {
+                    <mat-option [value]="category.category">{{category.category | deslugify}}</mat-option>
+                  }
+              </mat-autocomplete>
+              <mat-hint>{{categoriesSelected.length}}/5</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+
+    
+            <div class="w-full flex flex-col  items-center">
+              <h4 class="">Select your job  type preferences:</h4>
+              <div class="grid grid-cols-2 full-width">
+                <p><mat-checkbox color="primary" formControlName="remoteJob">Remote Work</mat-checkbox></p>
+                <p><mat-checkbox color="primary" formControlName="govtJob">Govt Job</mat-checkbox></p>
+                <p><mat-checkbox color="primary" formControlName="OnSiteJob">On-site job</mat-checkbox></p>
+                <p><mat-checkbox color="primary" formControlName="nonGovtJob">Non-govt Job</mat-checkbox></p>
+                <p><mat-checkbox color="primary" formControlName="HybridJob">Hybrid</mat-checkbox></p>
+               </div>
+            </div>
+  
+
+
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <button mat-raised-button color="primary" type="submit">Submit</button>
+          </mat-card-actions>
+        </mat-card>
+      </form>
+
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Done</ng-template>
+      <mat-card class="card">
+        <mat-card-content  >
+          <div class="flex flex-col justify-center items-center">
+            <p>You are now done.</p>
+            <div>
+              <button mat-button (click)="goToHome()">Go to home</button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-step>
+  </mat-stepper>
+
+</div>

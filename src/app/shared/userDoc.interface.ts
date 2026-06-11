@@ -1,0 +1,18 @@
+export interface UserDoc {
+  _id: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  dob: string;
+  highestEducation: string;
+  course?: string;
+  skills: string[];
+  jobPreferences? : {
+    categoriesInterested: string[];
+    remoteJob: boolean;
+    OnSiteJob: boolean;
+    HybridJob: boolean;
+    govtJob:  boolean;
+    nonGovtJob: boolean;
+  }
+}
